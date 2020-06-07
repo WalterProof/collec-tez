@@ -1,0 +1,52 @@
+name: ci-dapp
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'dapp/**'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10'
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: make dapp-install
+      - name: Test
+        run: make dapp-test
+      - name: Build
+        run: make dapp-build
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: dapp/build
+          path: dapp/build
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10'
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: dapp/build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: make dapp-deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

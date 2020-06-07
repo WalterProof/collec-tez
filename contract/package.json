@@ -1,0 +1,20 @@
+{
+  "name": "contract",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@taquito/taquito": "^6.2.0-beta.1",
+    "truffle": "^5.4.0-tezos.1",
+    "promise-retry": "^1.1.1"
+  },
+  "scripts": {
+    "compile": "truffle compile",
+    "deploy": "truffle deploy",
+    "migrate": "truffle migrate",
+    "test": "truffle test",
+    "wait-for-sandbox": "node ./scripts/sandbox/waitForNetwork.js",
+    "start-sandbox": "bash ./scripts/sandbox/start_sandbox.sh && npm run wait-for-sandbox",
+    "kill-sandbox": "bash ./scripts/sandbox/kill_sandbox.sh",
+    "restart-sandbox": "npm run kill-sandbox && npm run start-sandbox"
+  }
+}

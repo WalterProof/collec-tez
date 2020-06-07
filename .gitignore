@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+
+# deploy
+.firebase
+
+# faucet
+faucet.json
+
+# logs
+yarn-debug.log*
+yarn-error.log*
+
+# builds
+build
+
+# misc
+.DS_Store
+
