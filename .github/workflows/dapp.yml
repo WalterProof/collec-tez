@@ -1,4 +1,4 @@
-name: ci-dapp
+name: dapp
 on:
   push:
     branches:

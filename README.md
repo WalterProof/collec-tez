@@ -1,5 +1,7 @@
 # CollecTez
 
+![dapp](https://github.com/catsoap/collec-tez/workflows/dapp/badge.svg)
+
 ## Requirements
 
 You need to have the following tools installed:
