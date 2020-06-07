@@ -10,10 +10,16 @@ DAPP_DIR = dapp
 
 default: help
 
+define read_env
+	set -o allexport && source .env && set +o allexport
+endef
+
 #######################################
 #            COMMON                   #
 #######################################
 install: # to install all dependencies
+	@if [ ! -f .env -a -f .env.dist ]; then cp .env.dist .env; fi
+	@if [ ! -f $(DAPP_DIR)/src/faucet.json -a -f ./faucet.json ]; then ln -s $(PWD)/faucet.json $(DAPP_DIR)/src/faucet.json; fi
 	@$(MAKE) contract-install
 	@$(MAKE) dapp-install
 
@@ -49,7 +55,7 @@ dapp-install: ## to install dapp dependencies
 	@$(YARN) $(DAPP_DIR) install
 
 dapp-start: ## to start dapp in watch mode
-	@$(YARN) $(DAPP_DIR) start
+	@$(call read_env) && $(YARN) $(DAPP_DIR) start
 
 dapp-test: ## to run dapp tests
 	@$(YARN) $(DAPP_DIR) test

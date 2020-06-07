@@ -22,11 +22,11 @@ jobs:
       - name: Test
         run: make dapp-test
       - name: Build
-        run: make dapp-build
+        run: echo '{}' >  dapp/src/faucet.json && make dapp-build
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
-          name: dapp/build
+          name: build
           path: dapp/build
 
   deploy:
@@ -43,10 +43,11 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: dapp/build
+          name: build
+          path: dapp/build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: make dapp-deploy
+          args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
