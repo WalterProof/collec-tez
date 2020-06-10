@@ -3,7 +3,7 @@ import { TezosToolkit } from "@taquito/taquito";
 import { importKey } from "@taquito/signer";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 
-const { Provider, Consumer } = React.createContext();
+const TezosContext = React.createContext();
 
 class TezosContextProvider extends Component {
   state = {
@@ -19,15 +19,7 @@ class TezosContextProvider extends Component {
         rpc: process.env.REACT_APP_RPC,
       });
 
-      const FAUCET_KEY = await import("./faucet.json");
-
-      await importKey(
-        tk,
-        FAUCET_KEY.email,
-        FAUCET_KEY.password,
-        FAUCET_KEY.mnemonic.join(" "),
-        FAUCET_KEY.secret
-      );
+      await importKey(tk, process.env.REACT_APP_SK);
 
       const publicKeyHash = await tk.signer.publicKeyHash();
       this.setState({ publicKeyHash, tk });
@@ -45,11 +37,13 @@ class TezosContextProvider extends Component {
     const { publicKeyHash, tk } = this.state;
 
     return (
-      <Provider value={{ publicKeyHash, tk, createTK: this.createTK }}>
+      <TezosContext.Provider
+        value={{ publicKeyHash, tk, createTK: this.createTK }}
+      >
         {this.props.children}
-      </Provider>
+      </TezosContext.Provider>
     );
   }
 }
 
-export { TezosContextProvider, Consumer as TezosContextConsumer };
+export { TezosContextProvider, TezosContext };

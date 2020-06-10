@@ -1,27 +1,21 @@
 /** @jsx jsx */
-// eslint-disable-next-line
-import React from "react";
+import { useContext } from "react";
 import { Button, Box, Heading, jsx } from "theme-ui";
-import { TezosContextConsumer } from "../tezosContext";
-import { Balance } from "@taquito/react-components";
+import { TezosContext } from "../tezosContext";
+import Balance from "./Balance";
 
-function Account() {
-  return (
-    <TezosContextConsumer>
-      {({ publicKeyHash, tk, createTK }) => {
-        return publicKeyHash ? (
-          <Box>
-            <Heading>{publicKeyHash}</Heading>
-            <Heading sx={{ textAlign: "right" }}>
-              <Balance address={publicKeyHash} format="tz" />
-            </Heading>
-          </Box>
-        ) : (
-          <Button onClick={() => createTK()}>Connect</Button>
-        );
-      }}
-    </TezosContextConsumer>
+export default function Account() {
+  const context = useContext(TezosContext);
+
+  return context.publicKeyHash ? (
+    <Box>
+      <Heading>{context.publicKeyHash}</Heading>
+      <Heading sx={{ textAlign: "right" }}>
+        <Balance />
+      </Heading>
+    </Box>
+  ) : (
+    <Button onClick={() => context.createTK()}>Connect</Button>
   );
 }
 
-export default Account;

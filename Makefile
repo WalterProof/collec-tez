@@ -19,7 +19,6 @@ endef
 #######################################
 install: # to install all dependencies
 	@if [ ! -f .env -a -f .env.dist ]; then cp .env.dist .env; fi
-	@if [ ! -f $(DAPP_DIR)/src/faucet.json -a -f ./faucet.json ]; then ln -s $(PWD)/faucet.json $(DAPP_DIR)/src/faucet.json; fi
 	@$(MAKE) contract-install
 	@$(MAKE) dapp-install
 

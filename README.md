@@ -22,9 +22,12 @@ to see a help menu.
 
 ### Installation
 
-First, go get a tesnet faucet wallet [here](https://faucet.tzalpha.net/)  
-Then save your faucet as `faucet.json` in the root of this project  
 Now, run `make install`, this will install both `contract` and `dapp` projects
+
+### Faucet
+
+You can get a testnet faucet wallet [here](https://faucet.tzalpha.net/)  
+Then save your faucet as `faucet.json` in the root of this project
 
 ### Infra
 
