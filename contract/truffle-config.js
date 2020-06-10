@@ -1,5 +1,5 @@
 const { alice } = require("./scripts/sandbox/accounts");
-const { mnemonic, secret, password, email } = require("./faucet.json");
+const { mnemonic, secret, password, email } = require("../faucet.json");
 
 module.exports = {
   // see <http://truffleframework.com/docs/advanced/configuration>
