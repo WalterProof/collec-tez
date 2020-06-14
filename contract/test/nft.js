@@ -35,10 +35,23 @@ contract("nft", (accounts) => {
   });
 
   it(`non existing tokens are undefined`, async () => {
-    const deployedNonExistingTokenOwner = await storage.tokenOwners.get(`1`);
+    const deployedNonExistingTokenOwner = await storage.tokenOwners.get(`2`);
     assert.equal(deployedNonExistingTokenOwner, undefined);
-    const deployedNonExistingTokenMeta = await storage.tokenMeta.get(`1`);
+    const deployedNonExistingTokenMeta = await storage.tokenMeta.get(`2`);
     assert.equal(deployedNonExistingTokenMeta, undefined);
+  });
+
+  it(`fails if sender is not owner`, async () => {
+    const transferParam = [alice.pkh, 1];
+
+    try {
+      await nftInstance.transfer(...transferParam);
+    } catch (e) {
+      assert.equal(
+        e.message,
+        constants.contractErrors.ownerEqualToSenderAddress
+      );
+    }
   });
 
   it("transfer a nft from Alice to Bob", async () => {
@@ -56,45 +69,13 @@ contract("nft", (accounts) => {
     assert.equal(deployedTokenOwner, bob.pkh);
   });
 
-  // it(`not allow transfers from_ an address that did not sign the transaction`, async () => {
-  //   const transferParam = [
-  //     {
-  //       token_id: 0,
-  //       amount: 1,
-  //       from_: bob.pkh,
-  //       to_: alice.pkh,
-  //     },
-  //   ];
+  it(`fail if invalid token id`, async () => {
+    const transferParam = [bob.pkh, 2];
 
-  //   try {
-  //     /**
-  //      * Transactions in the test suite are signed by a secret/private key
-  //      * configured in truffle-config.js
-  //      */
-  //     await nft_instance.transfer(transferParam);
-  //   } catch (e) {
-  //     assert.equal(
-  //       e.message,
-  //       constants.contractErrors.fromEqualToSenderAddress
-  //     );
-  //   }
-  // });
-
-  // it(`not transfer tokens from Alice to Bob when Alice's balance is insufficient`, async () => {
-  //   const transferParam = [
-  //     {
-  //       token_id: 0,
-  //       // Alice's balance at this point is 9
-  //       amount: 100,
-  //       from_: alice.pkh,
-  //       to_: bob.pkh,
-  //     },
-  //   ];
-
-  //   try {
-  //     await nft_instance.transfer(transferParam);
-  //   } catch (e) {
-  //     assert.equal(e.message, constants.contractErrors.insufficientBalance);
-  //   }
-  // });
+    try {
+      await nftInstance.transfer(...transferParam);
+    } catch (e) {
+      assert.equal(e.message, constants.contractErrors.invalidTokenId);
+    }
+  });
 });

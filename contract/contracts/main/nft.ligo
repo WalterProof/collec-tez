@@ -27,7 +27,7 @@ changes owner of a token id.
 *)
 function transfer(const transferParam : transferParam; const storage : storage): (list(operation) * storage) is block {
     case storage.tokenOwners[transferParam.tokenId] of
-        | None -> failwith("this nft does not exists")
+        | None -> failwith("invalid token id")
         | Some(tokenOwner) -> block {
             failUnlessSenderIsOwner(tokenOwner);
             storage.tokenOwners[transferParam.tokenId] := transferParam.toAddress
