@@ -70,7 +70,7 @@ infra-kill: ## to kill all containers
 infra-restart: ## to restart containers
 	@$(YARN) $(CONTRACT_DIR) restart-sandbox
 	@docker kill bcd
-	@docker run --rm --name bcd --detach -p 8000:80 bakingbad/better-call-dev
+	@docker run --rm --name bcd --detach -p 9000:80 bakingbad/better-call-dev
 
 infra-up: ## to create and start all the containers
 	@$(YARN) $(CONTRACT_DIR) start-sandbox

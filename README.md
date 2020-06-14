@@ -40,4 +40,8 @@ Run `make dapp-start`
 Local URLs:
 
 - dapp: http://localhost:3000
-- explorer: http://localhost:8000
+- explorer: http://localhost:9000
+
+## Useful links
+
+https://forum.tezosagora.org/t/implementing-fa2-an-update-on-the-fa2-specification-and-smartpy-implementation-release/1870
