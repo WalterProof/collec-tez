@@ -1,4 +1,4 @@
-const nft = artifacts.require("nft");
+const tzip12NFT = artifacts.require("tzip-12-nft-big-map");
 const { alice, bob } = require("./../scripts/sandbox/accounts");
 const { MichelsonMap } = require("@taquito/taquito");
 
@@ -11,7 +11,7 @@ const initial_storage = {
 };
 
 module.exports = async (deployer, network, accounts) => {
-  await deployer.deploy(nft, initial_storage);
+  await deployer.deploy(tzip12NFT, initial_storage);
 };
 
 module.exports.initial_storage = initial_storage;

@@ -7,8 +7,7 @@ module.exports = {
     },
   },
   contractErrors: {
-    ownerEqualToSenderAddress: "owner address needs to be equal to the sender",
-    invalidTokenId: "invalid token id",
+    errorTokenUndefined: "FA2_TOKEN_UNDEFINED",
+    errorInsufficientBalance: "FA2_INSUFFICIENT_BALANCE",
   },
 };
-

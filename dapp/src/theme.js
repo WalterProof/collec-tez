@@ -17,7 +17,7 @@ export default {
   colors: {
     text: "dimgray",
     background: "lemonchiffon",
-    primary: "darkorange",
+    primary: "cornflowerblue",
     muted: "ivory",
     danger: "indianred",
   },
@@ -41,6 +41,7 @@ export default {
       cursor: "pointer",
       color: "white",
       fontWeight: "bold",
+      textTransform: "uppercase",
       bg: "primary",
       borderBottomWidth: 4,
       borderStyle: "solid",

@@ -11,6 +11,10 @@ class TezosContextProvider extends Component {
     tk: null,
   };
 
+  resetTK = () => {
+    this.setState({ publicKeyHash: null, tk: null });
+  };
+
   createTK = async () => {
     const tk = new TezosToolkit();
 
@@ -38,7 +42,12 @@ class TezosContextProvider extends Component {
 
     return (
       <TezosContext.Provider
-        value={{ publicKeyHash, tk, createTK: this.createTK }}
+        value={{
+          publicKeyHash,
+          tk,
+          createTK: this.createTK,
+          resetTK: this.resetTK,
+        }}
       >
         {this.props.children}
       </TezosContext.Provider>
