@@ -1,5 +1,6 @@
 # CollecTez
 
+![api](https://github.com/catsoap/collec-tez/workflows/api/badge.svg)
 ![dapp](https://github.com/catsoap/collec-tez/workflows/dapp/badge.svg)
 
 ## Requirements
@@ -22,12 +23,12 @@ to see a help menu.
 
 ### Installation
 
-Now, run `make install`, this will install both `contract` and `dapp` projects
+Run `make install`, this will install `api`, `contract` and `dapp` projects
 
 ### Faucet
 
 You can get a testnet faucet wallet [here](https://faucet.tzalpha.net/)  
-Then save your faucet as `faucet.json` in the root of this project
+Then save your faucet as `faucet.json` in the root of the repository
 
 ### Infra
 
@@ -37,7 +38,7 @@ Run `make infra-up` to lauch the infra
 
 Run `make dapp-start`
 
-Local URLs:
+### Local URLs:
 
 - dapp: http://localhost:3000
 - explorer: http://localhost:9000
