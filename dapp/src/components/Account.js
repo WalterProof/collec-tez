@@ -33,4 +33,3 @@ export default function Account() {
     <Button onClick={() => context.createTK()}>Sign In</Button>
   );
 }
-

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { TezosToolkit } from "@taquito/taquito";
 import { importKey } from "@taquito/signer";
 import { BeaconWallet } from "@taquito/beacon-wallet";
+import axios from "axios";
 
 const TezosContext = React.createContext();
 
@@ -9,6 +10,7 @@ class TezosContextProvider extends Component {
   state = {
     publicKeyHash: null,
     tk: null,
+    account: null,
   };
 
   resetTK = () => {
@@ -17,6 +19,7 @@ class TezosContextProvider extends Component {
 
   createTK = async () => {
     const tk = new TezosToolkit();
+    let publicKeyHash;
 
     if (["development", "test"].indexOf(process.env.NODE_ENV) >= 0) {
       tk.setProvider({
@@ -25,24 +28,31 @@ class TezosContextProvider extends Component {
 
       await importKey(tk, process.env.REACT_APP_SK);
 
-      const publicKeyHash = await tk.signer.publicKeyHash();
-      this.setState({ publicKeyHash, tk });
+      publicKeyHash = await tk.signer.publicKeyHash();
     } else {
       const beaconWallet = new BeaconWallet({ name: "test" });
       await beaconWallet.requestPermissions("carthagenet");
       tk.setProvider({ wallet: beaconWallet });
 
-      const publicKeyHash = await tk.wallet.pkh();
-      this.setState({ publicKeyHash, tk });
+      publicKeyHash = await tk.wallet.pkh();
     }
+
+    console.log(publicKeyHash);
+
+    const account = await axios.post(`${process.env.REACT_APP_API}/users`, {
+      keyHash: publicKeyHash,
+    });
+
+    this.setState({ account: account.data, publicKeyHash, tk });
   };
 
   render() {
-    const { publicKeyHash, tk } = this.state;
+    const { account, publicKeyHash, tk } = this.state;
 
     return (
       <TezosContext.Provider
         value={{
+          account,
           publicKeyHash,
           tk,
           createTK: this.createTK,

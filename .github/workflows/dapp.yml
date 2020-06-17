@@ -22,6 +22,8 @@ jobs:
       - name: Test
         run: make dapp-test
       - name: Build
+        env:
+          REACT_APP_API: 'https://us-central1-collec-tez.cloudfunctions.net' 
         run: echo '{}' >  dapp/src/faucet.json && make dapp-build
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master

@@ -5,6 +5,7 @@ SHELL := /bin/bash
 
 FIREBASE = firebase
 YARN = yarn --cwd
+API_DIR = api
 CONTRACT_DIR = contract
 DAPP_DIR = dapp
 
@@ -19,8 +20,22 @@ endef
 #######################################
 install: # to install all dependencies
 	@if [ ! -f .env -a -f .env.dist ]; then cp .env.dist .env; fi
+	@$(MAKE) api-install
 	@$(MAKE) contract-install
 	@$(MAKE) dapp-install
+
+
+#######################################
+#               API                   #
+#######################################
+api-deploy: ## to deploy the api 
+	@firebase deploy --only functions
+
+api-install: ## to install dependencies
+	@$(YARN) $(API_DIR) install
+
+api-serve: ## to start the local server
+	@firebase emulators:start --only firestore,functions
 
 #######################################
 #             CONTRACT                #

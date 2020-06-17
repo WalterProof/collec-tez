@@ -1,11 +1,15 @@
 # dependencies
 node_modules
 
-# deploy
-.firebase
-
 # environment
 .env
+
+# firebase 
+.firebase
+.runtimeconfig.json
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
 
 # faucet
 faucet.json
