@@ -10,7 +10,7 @@ const users = ((_db) => {
 
       const querySnapshot = await query.get();
       if (querySnapshot.empty) {
-        return;
+        return null;
       }
 
       return querySnapshot.docs[0].data();
