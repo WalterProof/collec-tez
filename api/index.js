@@ -6,12 +6,20 @@ exports.users = functions.https.onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Methods", "GET, PUT, POST, OPTIONS");
   response.set("Access-Control-Allow-Headers", "*");
 
-  if (request.method !== "POST") {
+  if (request.method == "OPTIONS") {
     return response.end();
   }
 
   const { body } = request;
   const { keyHash } = body;
-  user = await users.findOrCreate(keyHash);
-  response.send(200, JSON.stringify(user));
+
+  if (request.method === "POST") {
+    user = await users.findOrCreate(keyHash);
+  }
+
+  if (request.method === "PUT") {
+    user = await users.update(body);
+  }
+
+  response.status(200).send(JSON.stringify(user));
 });

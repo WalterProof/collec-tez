@@ -6,8 +6,9 @@ import Balance from "./Balance";
 
 export default function Account() {
   const context = useContext(TezosContext);
+  const { account } = context;
 
-  return context.publicKeyHash ? (
+  return account ? (
     <Box
       sx={{
         display: "flex",
@@ -22,7 +23,7 @@ export default function Account() {
           px: 3,
         }}
       >
-        <Box>{context.publicKeyHash}</Box>
+        <Box>{account.username}</Box>
         <Box sx={{ fontWeight: "bold" }}>
           <Balance />
         </Box>

@@ -33,7 +33,9 @@ const users = ((_db) => {
     },
 
     async update(updatedUser) {
-      return _db.collection("users").doc(updatedUser.keyHash).set(updatedUser);
+      await _db.collection("users").doc(updatedUser.keyHash).set(updatedUser);
+
+      return users.findOrCreate(updatedUser.keyHash);
     },
   };
 })(db);

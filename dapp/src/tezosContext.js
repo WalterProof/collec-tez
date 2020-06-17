@@ -8,13 +8,16 @@ const TezosContext = React.createContext();
 
 class TezosContextProvider extends Component {
   state = {
-    publicKeyHash: null,
     tk: null,
     account: null,
   };
 
-  resetTK = () => {
-    this.setState({ publicKeyHash: null, tk: null });
+  createAccount = async (username) => {
+    const account = await axios.put(`${process.env.REACT_APP_API}/users`, {
+      keyHash: this.state.publicKeyHash,
+      username: username,
+    });
+    this.setState({ account: account.data });
   };
 
   createTK = async () => {
@@ -37,26 +40,28 @@ class TezosContextProvider extends Component {
       publicKeyHash = await tk.wallet.pkh();
     }
 
-    console.log(publicKeyHash);
-
     const account = await axios.post(`${process.env.REACT_APP_API}/users`, {
       keyHash: publicKeyHash,
     });
 
-    this.setState({ account: account.data, publicKeyHash, tk });
+    this.setState({ account: account.data, tk });
+  };
+
+  resetTK = () => {
+    this.setState({ account: null, tk: null });
   };
 
   render() {
-    const { account, publicKeyHash, tk } = this.state;
+    const { account, tk } = this.state;
 
     return (
       <TezosContext.Provider
         value={{
           account,
-          publicKeyHash,
-          tk,
+          createAccount: this.createAccount,
           createTK: this.createTK,
           resetTK: this.resetTK,
+          tk,
         }}
       >
         {this.props.children}
