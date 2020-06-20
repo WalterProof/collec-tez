@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/** @jsx jsx */
+import { useEffect, useState } from "react";
 import { Box, Heading, Spinner, jsx } from "theme-ui";
 import api from "../api";
 
@@ -30,7 +31,7 @@ export default function Tokens() {
         <Box>
           <Heading>{token.meta.name}</Heading>
           <p>{token.meta.description}</p>
-          <img src={token.meta.image} />
+          <img src={token.meta.image} alt="" />
         </Box>
       ))}
     </Box>
