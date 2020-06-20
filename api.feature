@@ -5,3 +5,5 @@ Content-Type: application/json
 {
 	"keyHash": "tz123"
 }
+
+GET $host/tokens

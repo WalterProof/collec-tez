@@ -14,7 +14,7 @@ class TezosContextProvider extends Component {
 
   createAccount = async (username) => {
     const account = await axios.put(`${process.env.REACT_APP_API}/users`, {
-      keyHash: this.state.publicKeyHash,
+      keyHash: this.state.account.keyHash,
       username: username,
     });
     this.setState({ account: account.data });

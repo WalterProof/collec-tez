@@ -1,6 +1,6 @@
 /** @jsx jsx */
 // eslint-disable-next-line
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import { ReactComponent as Logo } from "./svg/logo.svg";
 import { TezosContext } from "./tezosContext";
 import theme from "./theme";
 import Account from "./components/Account";
+import Tokens from "./components/Tokens";
 
 function App() {
   const context = useContext(TezosContext);
@@ -39,7 +40,9 @@ function App() {
             </Box>
           </header>
           <div>
-            <Box sx={{ textAlign: "center", my: 2 }}></Box>
+            <Box sx={{ my: 2 }}>
+              <Tokens />
+            </Box>
           </div>
         </Container>
       ) : (

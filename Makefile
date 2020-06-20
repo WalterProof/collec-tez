@@ -8,8 +8,20 @@ YARN = yarn --cwd
 API_DIR = api
 CONTRACT_DIR = contract
 DAPP_DIR = dapp
+NETWORK ?= development
 
 default: help
+
+#
+# set json key with value in file
+#
+# $(1) the file
+# $(2) the key
+# $(3) the value
+#
+define set_json_key
+	jq '$(2) |= $$v' $(1) --arg v $(3) | sponge $(1)
+endef
 
 define read_env
 	set -o allexport && source .env && set +o allexport
@@ -18,7 +30,7 @@ endef
 #######################################
 #            COMMON                   #
 #######################################
-install: # to install all dependencies
+install: # install all dependencies
 	@if [ ! -f .env -a -f .env.dist ]; then cp .env.dist .env; fi
 	@$(MAKE) api-install
 	@$(MAKE) contract-install
@@ -28,50 +40,58 @@ install: # to install all dependencies
 #######################################
 #               API                   #
 #######################################
-api-deploy: ## to deploy the api 
+api-config: ## override firebase config
+	@firebase functions:config:get > .runtimeconfig.json
+	@$(call read_env) && \
+	$(call set_json_key,.runtimeconfig.json,.contract.address,$$REACT_APP_CONTRACT_ADDRESS) && \
+	$(call set_json_key,.runtimeconfig.json,.node.url,$$REACT_APP_RPC) && \
+	$(call set_json_key,.runtimeconfig.json,.tzstats.api,$$TZSTATS_API) && \
+	$(call set_json_key,.runtimeconfig.json,.ipfs.gateway,$$IPFS_GATEWAY) 
+
+api-deploy: ## deploy the api 
 	@firebase deploy --only functions
 
-api-install: ## to install dependencies
+api-install: ## install api dependencies
 	@$(YARN) $(API_DIR) install
 
-api-serve: ## to start the local server
+api-serve: ## start the local server
 	@firebase emulators:start --only firestore,functions
 
 #######################################
 #             CONTRACT                #
 #######################################
-contract-compile: ## to run contract compilation
+contract-compile: ## run contract compilation
 	@$(YARN) $(CONTRACT_DIR) compile
 
-contract-deploy: ## to deploy contract 
-	@$(YARN) $(CONTRACT_DIR) deploy
+contract-deploy: ## deploy contract (make contract-deploy NETWORK=<network>)
+	@$(YARN) $(CONTRACT_DIR) deploy --network $(NETWORK)
 
-contract-install: ## to install contract dependencies
+contract-install: ## install contract dependencies
 	@$(YARN) $(CONTRACT_DIR) install
 
-contract-test: ## to run the contract tests
+contract-test: ## run the contract tests
 	@$(YARN) $(CONTRACT_DIR) test
 
-contract-migrate: ## to run contract migrations
+contract-migrate: ## run contract migrations
 	@$(YARN) $(CONTRACT_DIR) migrate
 
 
 #######################################
 #              DAPP                   #
 #######################################
-dapp-build: ## to build dapp
+dapp-build: ## build dapp
 	@$(YARN) $(DAPP_DIR) build
 
-dapp-deploy: ## to deploy dapp
+dapp-deploy: ## deploy dapp
 	@$(FIREBASE) deploy --only hosting
 
-dapp-install: ## to install dapp dependencies
+dapp-install: ## install dapp dependencies
 	@$(YARN) $(DAPP_DIR) install
 
-dapp-start: ## to start dapp in watch mode
+dapp-start: ## start dapp in watch mode
 	@$(call read_env) && $(YARN) $(DAPP_DIR) start
 
-dapp-test: ## to run dapp tests
+dapp-test: ## run dapp tests
 	@$(YARN) $(DAPP_DIR) test
 
 

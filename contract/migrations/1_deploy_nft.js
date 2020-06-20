@@ -5,8 +5,8 @@ const { MichelsonMap } = require("@taquito/taquito");
 const initial_storage = {
   tokenOwners: MichelsonMap.fromLiteral({ 0: alice.pkh, 1: bob.pkh }),
   tokenMeta: MichelsonMap.fromLiteral({
-    0: "QmNgnf4AkSTMpaPNGiaciMbon1hmqoBwsL2agGj1EyHnQK",
-    1: "QmPTJiftQAsThU78iHyUx3EFKtAR7Eq6PUQVk7T85p498Q",
+    0: "QmcjPo1qwQqAyDz1AuvAnShvHZx8RFeMQvTxvGroz4Vfib",
+    1: "QmTgwCf1vvR9SFmGZ4GARuY2cN5BgU7NLsigp3gyssh91u",
   }),
 };
 
