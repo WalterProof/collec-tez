@@ -1,26 +1,17 @@
 /** @jsx jsx */
 // eslint-disable-next-line
 import React, { useContext, useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Input,
-  Label,
-  jsx,
-  ThemeProvider,
-} from "theme-ui";
+import { Box, Container, Heading, jsx, ThemeProvider } from "theme-ui";
 import { ReactComponent as Logo } from "./svg/logo.svg";
 import { TezosContext } from "./tezosContext";
 import theme from "./theme";
 import Account from "./components/Account";
 import Tokens from "./components/Tokens";
+import SignIn from "./components/SignIn";
 
 function App() {
   const context = useContext(TezosContext);
-  const { account, createAccount } = context;
-  const [username, setUsername] = useState("");
+  const { account } = context;
 
   return (
     <ThemeProvider theme={theme}>
@@ -47,23 +38,7 @@ function App() {
         </Container>
       ) : (
         <Container p={4}>
-          <Box
-            as="form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              createAccount(username);
-            }}
-          >
-            <Label htmlFor="username">Username</Label>
-            <Input
-              name="username"
-              id="username"
-              value={username}
-              mb={3}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <Button>Submit</Button>
-          </Box>
+          <SignIn />
         </Container>
       )}
     </ThemeProvider>

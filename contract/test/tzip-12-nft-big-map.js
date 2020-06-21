@@ -1,5 +1,4 @@
 const tzip12NFT = artifacts.require("tzip-12-nft-big-map");
-const { initial_storage } = require("../migrations/1_deploy_nft.js");
 const constants = require("./../helpers/constants.js");
 
 const { alice, bob } = require("../scripts/sandbox/accounts");

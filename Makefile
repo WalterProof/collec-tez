@@ -1,5 +1,6 @@
-.PHONY: contract-compile contract-deploy contract-install contract-migrate contract-test \
-	dapp-build dapp-deploy dapp-install dapp-start dapp-test help infra-kill infra-restart infra-up
+.PHONY: api-config api-deploy api-install api-serve contract-compile contract-deploy \
+	contract-install contract-migrate contract-test dapp-build dapp-deploy dapp-install \
+	dapp-start dapp-test help infra-kill infra-restart infra-up
 
 SHELL := /bin/bash
 
