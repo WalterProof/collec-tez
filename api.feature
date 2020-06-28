@@ -1,9 +1,5 @@
-# $host = http://localhost:5001/collec-tez/us-central1
+# $host = http://localhost:8732
 
-POST $host/users
-Content-Type: application/json
-{
-	"keyHash": "tz123"
-}
+GET $host/chains/main/blocks/head/context/contracts/tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb
 
-GET $host/tokens
+GET $host/chains/main/blocks/head/context/contracts/KT1EyY5Wj6P9Mvp4tnqWEMm773Ho2tvwf2gS
