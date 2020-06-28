@@ -1,3 +1,6 @@
+# builds
+build
+
 # dependencies
 node_modules
 
@@ -19,9 +22,9 @@ faucet.json
 yarn-debug.log*
 yarn-error.log*
 
-# builds
-build
-
 # misc
 .DS_Store
 
+# pytezos
+__pycache__
+.pytest_cache
