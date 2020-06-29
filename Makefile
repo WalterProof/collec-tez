@@ -9,12 +9,19 @@ NETWORK ?= development
 
 # name of the ganache-cli created container sandbox
 SANDBOX_CONTAINER_NAME = flextesa-sandbox
+TOOLS_CONTAINER_NAME = tools
 
 DOCKER_START_SANDBOX = docker run --rm --detach --name $(SANDBOX_CONTAINER_NAME) \
 					   -v $(shell pwd)/$(CONTRACT_DIR)/contracts:/contracts \
 					   -p 8732:20000 -e block_time=4 \
 					   registry.gitlab.com/tezos/flextesa:image-tutobox-run carthagebox start
+
 DOCKER_RUN_SANDBOX = docker exec -it $(SANDBOX_CONTAINER_NAME) sh -c
+
+DOCKER_RUN_TOOLS = docker run -it -e SANDBOX_ACCOUNT_ALICE -e SANDBOX_ACCOUNT_BOB \
+				   -u `id -u`:`id -g` --rm -v $(shell pwd)/$(CONTRACT_DIR):/contract \
+				   ekino/ci-tezosqa:0.1-latest   
+
 
 
 default: help
@@ -72,20 +79,8 @@ api-serve: ## start the local server
 #######################################
 #             CONTRACT                #
 #######################################
-contract-compile: ## run contract compilation
-	@$(YARN) $(CONTRACT_DIR) compile
-
-contract-deploy: ## deploy contract (make contract-deploy NETWORK=<network>)
-	@$(YARN) $(CONTRACT_DIR) deploy --network $(NETWORK)
-
-contract-install: ## install contract dependencies
-	@$(YARN) $(CONTRACT_DIR) install
-
 contract-test: ## run the contract tests
-	@$(call read_env) ; pytest -v $(CONTRACT_DIR)/tests
-
-contract-migrate: ## run contract migrations
-	@$(YARN) $(CONTRACT_DIR) migrate
+	@$(call read_env) && $(DOCKER_RUN_TOOLS) pytest -v /contract/tests
 
 
 #######################################
@@ -97,21 +92,32 @@ dapp-build: ## build dapp
 dapp-deploy: ## deploy dapp
 	@$(FIREBASE) deploy --only hosting
 
-dapp-install: ## install dapp dependencies
+dapp-install: ## install dapp
 	@$(YARN) $(DAPP_DIR) install
 
-dapp-start: ## start dapp in watch mode
+dapp-start: ## start dapp
 	@$(call read_env) && $(YARN) $(DAPP_DIR) start
 
-dapp-test: ## run dapp tests
+dapp-test: ## test dapp
 	@$(YARN) $(DAPP_DIR) test
 
+
+#######################################
+#             INFRA                   #
+#######################################
+infra-up: ## launch sandbox and tools containers
+	@$(DOCKER_START_SANDBOX)
+	@$(DOCKER_START_TOOLS)
+
+infra-kill: ## kill sandbox and tools containers
+	@docker kill $(SANDBOX_CONTAINER_NAME)
+	@docker kill $(TOOLS_CONTAINER_NAME)
 
 
 #######################################
 #             SANDBOX                 #
 #######################################
-sandbox-config:
+sandbox-config: ## configure sandbox
 	@$(DOCKER_RUN_SANDBOX) 'tezos-client -P 20000 config update'
 	@$(call read_env) && \
 		alice=$$(echo $$SANDBOX_ACCOUNT_ALICE | jq .sk) && \
@@ -119,21 +125,16 @@ sandbox-config:
 		$(DOCKER_RUN_SANDBOX) "tezos-client import secret key alice unencrypted:$$alice" && \
 		$(DOCKER_RUN_SANDBOX) "tezos-client import secret key bob unencrypted:$$bob"
 
-sandbox-info:
+sandbox-info: ## display sandbox info 
 	@$(DOCKER_RUN_SANDBOX) 'carthagebox info'
 
-sandbox-kill: ## kill sandbox
-	@docker kill $(SANDBOX_CONTAINER_NAME)
-
-sandbox-up: ## start sandbox
-	@$(DOCKER_START_SANDBOX) 
-
-sandbox-deploy-FA2: ## deploy FA2 Michelson
+sandbox-deploy-FA2: ## deploy FA2 contract 
 	@storage=$$(cat $(CONTRACT_DIR)/contracts/nft_mutran_storage.tz) ; \
 	$(DOCKER_RUN_SANDBOX) "tezos-client originate contract FA2 transferring 0 from alice running /contracts/nft_mutran_contract.tz --init '""$$storage""' -f --burn-cap 6.405"
 
-sandbox-FA2-mint: ## mint 
+sandbox-FA2-mint:   
 	@$(DOCKER_RUN_SANDBOX) "tezos-client transfer 0.000000 from tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb to KT1EyY5Wj6P9Mvp4tnqWEMm773Ho2tvwf2gS --entrypoint 'mint' --arg 'Pair (Pair \"tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb\" 1) (Pair \"TOK\" 1)' --burn-cap 0.166"
+
 
 #######################################
 #               MISC                  #

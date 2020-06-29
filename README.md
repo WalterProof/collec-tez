@@ -32,11 +32,15 @@ to see a help menu.
 
 ### Installation
 
-Run `make install`, this will install `api`, `contract` and `dapp` projects
+Run `make install`, this will install `api` and `dapp` projects
 
 ### Infra
 
-Run `make infra-up` to lauch the infra
+Run `make infra-up` to lauch the sandbox and tools containers
+
+### Sandbox
+
+Some commands, like deploy requires the config to be changed from the default one, for this run `make sandbox-config`
 
 ### Contract
 
