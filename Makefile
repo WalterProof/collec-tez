@@ -1,8 +1,3 @@
-.PHONY: api-config api-deploy api-install api-serve contract-compile contract-deploy \
-	contract-install contract-migrate contract-test dapp-build dapp-deploy dapp-install \
-	dapp-start dapp-test help infra-kill infra-restart infra-up sandbox-deploy-FA2 \
-	sandbox-run
-
 SHELL := /bin/bash
 
 FIREBASE = firebase
@@ -12,9 +7,14 @@ CONTRACT_DIR = contract
 DAPP_DIR = dapp
 NETWORK ?= development
 
-DOCKER_START_BCD = docker run --rm --name bcd --detach -p 9000:80 bakingbad/better-call-dev
-DOCKER_START_SANDBOX = docker run --rm --name flextesa-sandbox -v $(shell pwd)/$(CONTRACT_DIR)/contracts:/contracts --detach -p 8732:20000 stovelabs/image-carthagebox-run-archive:latest sandbox-archive start
-DOCKER_RUN_SANDBOX = docker exec -it flextesa-sandbox sh -c
+# name of the ganache-cli created container sandbox
+SANDBOX_CONTAINER_NAME = flextesa-sandbox
+
+DOCKER_START_SANDBOX = docker run --rm --detach --name $(SANDBOX_CONTAINER_NAME) \
+					   -v $(shell pwd)/$(CONTRACT_DIR)/contracts:/contracts \
+					   -p 8732:20000 -e block_time=4 \
+					   registry.gitlab.com/tezos/flextesa:image-tutobox-run carthagebox start
+DOCKER_RUN_SANDBOX = docker exec -it $(SANDBOX_CONTAINER_NAME) sh -c
 
 
 default: help
@@ -107,37 +107,28 @@ dapp-test: ## run dapp tests
 	@$(YARN) $(DAPP_DIR) test
 
 
-########################################
-#              INFRA                   #
-########################################
-infra-kill: ## to kill all containers
-	@docker kill flextesa-sandbox
-	@docker kill bcd
 
-infra-restart: ## to restart containers
-	$(MAKE) infra-kill
-	$(MAKE) infra-up
-
-infra-up: ## to create and start all the containers
-	@echo "Starting sandbox..."
-	@$(DOCKER_START_SANDBOX)
+#######################################
+#             SANDBOX                 #
+#######################################
+sandbox-config:
 	@$(DOCKER_RUN_SANDBOX) 'tezos-client -P 20000 config update'
 	@$(call read_env) && \
 		alice=$$(echo $$SANDBOX_ACCOUNT_ALICE | jq .sk) && \
 		bob=$$(echo $$SANDBOX_ACCOUNT_BOB | jq .sk) && \
 		$(DOCKER_RUN_SANDBOX) "tezos-client import secret key alice unencrypted:$$alice" && \
 		$(DOCKER_RUN_SANDBOX) "tezos-client import secret key bob unencrypted:$$bob"
-	@echo "Starting BCD..."
-	@$(DOCKER_START_BCD)
 
+sandbox-info:
+	@$(DOCKER_RUN_SANDBOX) 'carthagebox info'
 
-#######################################
-#             SANDBOX                 #
-#######################################
-sandbox-run: ## run client command in sandbox (make sandbox-client-run CMD=bootstrapped)
-	@$(DOCKER_RUN_SANDBOX) 'tezos-client $(CMD)'
+sandbox-kill: ## kill sandbox
+	@docker kill $(SANDBOX_CONTAINER_NAME)
 
-sandbox-FA2-deploy: ## deploy FA2 Michelson
+sandbox-up: ## start sandbox
+	@$(DOCKER_START_SANDBOX) 
+
+sandbox-deploy-FA2: ## deploy FA2 Michelson
 	@storage=$$(cat $(CONTRACT_DIR)/contracts/nft_mutran_storage.tz) ; \
 	$(DOCKER_RUN_SANDBOX) "tezos-client originate contract FA2 transferring 0 from alice running /contracts/nft_mutran_contract.tz --init '""$$storage""' -f --burn-cap 6.405"
 
