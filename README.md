@@ -51,11 +51,14 @@ Once deployed, fill the obtained contract address in the .env file.
 
 ### Dapp Dev
 
-Run `make dapp-start`
+Launch api with `make api-serve`
+
+Then run `make dapp-start`
 
 ### Local URLs:
 
 - dapp: http://localhost:3000
+- firebase admin: http://localhost:4000
 - explorer: http://localhost:9000
 
 ## Useful links

@@ -29,7 +29,7 @@ class TezosContextProvider extends Component {
         rpc: process.env.REACT_APP_RPC,
       });
 
-      await importKey(tk, process.env.REACT_APP_SK);
+      await importKey(tk, process.env.REACT_APP_ALICE_SK);
 
       publicKeyHash = await tk.signer.publicKeyHash();
     } else {

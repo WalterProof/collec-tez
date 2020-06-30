@@ -28,7 +28,7 @@ export default function Tokens() {
       }}
     >
       {tokens.map((token) => (
-        <Box>
+        <Box key={token.id}>
           <Heading>{token.meta.name}</Heading>
           <p>{token.meta.description}</p>
           <img src={token.meta.image} alt="" />

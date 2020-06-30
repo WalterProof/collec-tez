@@ -3,9 +3,7 @@ SHELL := /bin/bash
 FIREBASE = firebase
 YARN = yarn --cwd
 API_DIR = api
-CONTRACT_DIR = contract
 DAPP_DIR = dapp
-NETWORK ?= development
 
 UID := $(shell id -u)
 GID := $(shell id -g)
@@ -15,7 +13,7 @@ default: help
 DOCKER_SERVICE_TOOLS = tools
 DOCKER_SERVICE_SANDBOX = sandbox
 
-DOCKER_CMD_TOOLS = docker-compose exec $(DOCKER_SERVICE_TOOLS)
+DOCKER_CMD_TOOLS = docker-compose exec -u ek $(DOCKER_SERVICE_TOOLS)
 DOCKER_CMD_SANDBOX = docker-compose exec $(DOCKER_SERVICE_SANDBOX)
 
 #
@@ -75,6 +73,12 @@ contracts-test: ## run the contracts tests
 contracts-interactive: ## open python console
 	@$(DOCKER_CMD_TOOLS) python
 
+contracts-run-script: ## run script from tools container (make contracts-run-script SCRIPT=script)
+	$(DOCKER_CMD_TOOLS) python contracts/scripts/$(SCRIPT).py
+
+contracts-originate-FA2: ## originate the FA2 contract
+	$(shell ./scripts/originate-FA2.sh)
+
 #######################################
 #              DAPP                   #
 #######################################
@@ -88,11 +92,12 @@ dapp-install: ## install dapp
 	@$(YARN) $(DAPP_DIR) install
 
 dapp-start: ## start dapp
-	@$(call read_env) && $(YARN) $(DAPP_DIR) start
+	@$(call read_env) && \
+		export REACT_APP_ALICE_SK=$$SANDBOX_ALICE_SK &&\
+		$(YARN) $(DAPP_DIR) start
 
 dapp-test: ## test dapp
 	@$(YARN) $(DAPP_DIR) test
-
 
 
 ########################################
@@ -116,6 +121,7 @@ infra-stop: ## to stop all the containers
 infra-up: ## to create and start all the containers
 	@if [ ! -f .env -a -f .env.dist ]; then sed "s,#UID#,$(UID),g;s,#GID#,$(GID),g" .env.dist > .env; fi
 	@docker-compose up --build -d
+	@docker-compose exec bcd bash -c 'sed -i "s/127.0.0.1:8732/sandbox:20000/g" /usr/share/nginx/html/js/app.76b1b662.js'
 
 
 #######################################

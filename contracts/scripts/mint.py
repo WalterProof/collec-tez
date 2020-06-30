@@ -2,8 +2,15 @@ import os
 from pytezos import pytezos
 from pytezos.crypto import Key
 
-alice = Key.from_encoded_key(os.environ.get('SANDBOX_ALICE_SK'))
-bob = Key.from_encoded_key(os.environ.get('SANDBOX_BOB_SK'))
+FA2_ADDRESS = os.environ.get('FA2_ADDRESS')
+ALICE_SK = os.environ.get('SANDBOX_ALICE_SK')
 
-c = pytezos.using(
-    key=alice, shell='http://sandbox:20000').contract('KT19xx7aT86m2e57Q7yBrpuHqBW36w2NcsgF')
+alice = Key.from_encoded_key(ALICE_SK)
+
+pytezos.using(key=alice, shell='http://sandbox:20000')
+
+ci = pytezos.contract(FA2_ADDRESS)
+
+op = ci.mint({'address': alice.public_key_hash(),
+              'amount': 1, 'symbol': 'TOK', 'token_id': 0}).using(key=alice).inject()
+print(op)
