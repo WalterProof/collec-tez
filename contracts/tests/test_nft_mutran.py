@@ -8,13 +8,8 @@ from pytezos.crypto import Key
 from pytezos import ContractInterface, pytezos, format_timestamp, MichelsonRuntimeError
 
 
-def key_from_env(varname):
-    account = json.loads(os.environ.get(varname))
-    return Key.from_encoded_key(account['sk'])
-
-
-alice = key_from_env('SANDBOX_ACCOUNT_ALICE')
-bob = key_from_env('SANDBOX_ACCOUNT_BOB')
+alice = Key.from_encoded_key(os.environ.get('SANDBOX_ALICE_SK'))
+bob = Key.from_encoded_key(os.environ.get('SANDBOX_BOB_SK'))
 
 initial_storage = {
     'administrator': alice.public_key_hash(),
@@ -32,7 +27,7 @@ class NFTMutranTest(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.nft_mutran = ContractInterface.create_from(
-            join(dirname(__file__), '../contracts/nft_mutran_contract.tz'))
+            join(dirname(__file__), '../nft_mutran_contract.tz'))
 
     def test_mint(self):
         res = self.nft_mutran \

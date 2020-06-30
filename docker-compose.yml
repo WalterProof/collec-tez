@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  sandbox:
+    image: registry.gitlab.com/tezos/flextesa:image-tutobox-run
+    environment:
+      block_time: 4 
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./contracts:/contracts
+    ports:
+      - "8732:20000"
+    command: carthagebox start
+
+  tools:
+    build:
+      context: .
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    environment:
+      FA2_ADDRESS: ${FA2_ADDRESS}
+      SANDBOX_ALICE_SK: ${SANDBOX_ALICE_SK}
+      SANDBOX_BOB_SK: ${SANDBOX_BOB_SK}
+    tty: true
+    stdin_open: true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    user: ${UID}
+    volumes:
+      - .:/home/ek
+

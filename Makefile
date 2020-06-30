@@ -7,25 +7,16 @@ CONTRACT_DIR = contract
 DAPP_DIR = dapp
 NETWORK ?= development
 
-# name of the ganache-cli created container sandbox
-SANDBOX_CONTAINER_NAME = flextesa-sandbox
-TOOLS_CONTAINER_NAME = tools
-
-DOCKER_START_SANDBOX = docker run --rm --detach --name $(SANDBOX_CONTAINER_NAME) \
-					   -v $(shell pwd)/$(CONTRACT_DIR)/contracts:/contracts \
-					   -p 8732:20000 -e block_time=4 \
-					   registry.gitlab.com/tezos/flextesa:image-tutobox-run carthagebox start
-
-DOCKER_RUN_SANDBOX = docker exec -it $(SANDBOX_CONTAINER_NAME) sh -c
-
-DOCKER_RUN_TOOLS = docker run -it -e SANDBOX_ACCOUNT_ALICE -e SANDBOX_ACCOUNT_BOB \
-				   -u `id -u`:`id -g` --rm -v $(shell pwd)/$(CONTRACT_DIR):/contract \
-				   ekino/ci-tezosqa:0.1-latest   
-
-
+UID := $(shell id -u)
+GID := $(shell id -g)
 
 default: help
 
+DOCKER_SERVICE_TOOLS = tools
+DOCKER_SERVICE_SANDBOX = sandbox
+
+DOCKER_CMD_TOOLS = docker-compose exec $(DOCKER_SERVICE_TOOLS)
+DOCKER_CMD_SANDBOX = docker-compose exec $(DOCKER_SERVICE_SANDBOX)
 
 #
 # read environment variables from .env file
@@ -49,10 +40,9 @@ endef
 #            COMMON                   #
 #######################################
 install: # install all dependencies
-	@if [ ! -f .env -a -f .env.dist ]; then cp .env.dist .env; fi
-	@$(MAKE) api-install
-	@$(MAKE) contract-install
-	@$(MAKE) dapp-install
+	@if [ ! -f .env -a -f .env.dist ]; then sed "s,#UID#,$(UID),g;s,#GID#,$(GID),g" .env.dist > .env; fi
+	@make api-install
+	@make dapp-install
 
 
 #######################################
@@ -77,11 +67,13 @@ api-serve: ## start the local server
 	
 
 #######################################
-#             CONTRACT                #
+#            CONTRACTS                #
 #######################################
-contract-test: ## run the contract tests
-	@$(call read_env) && $(DOCKER_RUN_TOOLS) pytest -v /contract/tests
+contracts-test: ## run the contracts tests
+	@$(DOCKER_CMD_TOOLS) pytest -v contracts/tests
 
+contracts-interactive: ## open python console
+	@$(DOCKER_CMD_TOOLS) python
 
 #######################################
 #              DAPP                   #
@@ -102,38 +94,45 @@ dapp-test: ## test dapp
 	@$(YARN) $(DAPP_DIR) test
 
 
-#######################################
-#             INFRA                   #
-#######################################
-infra-up: ## launch sandbox and tools containers
-	@$(DOCKER_START_SANDBOX)
-	@$(DOCKER_START_TOOLS)
 
-infra-kill: ## kill sandbox and tools containers
-	@docker kill $(SANDBOX_CONTAINER_NAME)
-	@docker kill $(TOOLS_CONTAINER_NAME)
+########################################
+#              INFRA                   #
+########################################
+infra-clean: ## to stop and remove containers, networks, images
+	@docker-compose down --rmi all
+
+infra-rebuild: ## to clean and up all
+	@make infra-clean infra-up
+
+infra-shell-tools: ## to open a shell session in the tools container
+	$(DOCKER_CMD_TOOLS) bash
+
+infra-show-logs: ## to show logs from node
+	@docker logs babylonnet_node_1 --follow
+
+infra-stop: ## to stop all the containers
+	@docker-compose stop
+
+infra-up: ## to create and start all the containers
+	@if [ ! -f .env -a -f .env.dist ]; then sed "s,#UID#,$(UID),g;s,#GID#,$(GID),g" .env.dist > .env; fi
+	@docker-compose up --build -d
 
 
 #######################################
 #             SANDBOX                 #
 #######################################
 sandbox-config: ## configure sandbox
-	@$(DOCKER_RUN_SANDBOX) 'tezos-client -P 20000 config update'
+	@$(DOCKER_CMD_SANDBOX) tezos-client -P 20000 config update
 	@$(call read_env) && \
-		alice=$$(echo $$SANDBOX_ACCOUNT_ALICE | jq .sk) && \
-		bob=$$(echo $$SANDBOX_ACCOUNT_BOB | jq .sk) && \
-		$(DOCKER_RUN_SANDBOX) "tezos-client import secret key alice unencrypted:$$alice" && \
-		$(DOCKER_RUN_SANDBOX) "tezos-client import secret key bob unencrypted:$$bob"
+		$(DOCKER_CMD_SANDBOX) tezos-client import secret key alice unencrypted:$$SANDBOX_ALICE_SK --force && \
+		$(DOCKER_CMD_SANDBOX) tezos-client import secret key bob unencrypted:$$SANDBOX_BOB_SK --force
 
 sandbox-info: ## display sandbox info 
-	@$(DOCKER_RUN_SANDBOX) 'carthagebox info'
+	@$(DOCKER_CMD_SANDBOX) 'carthagebox info'
 
 sandbox-deploy-FA2: ## deploy FA2 contract 
-	@storage=$$(cat $(CONTRACT_DIR)/contracts/nft_mutran_storage.tz) ; \
-	$(DOCKER_RUN_SANDBOX) "tezos-client originate contract FA2 transferring 0 from alice running /contracts/nft_mutran_contract.tz --init '""$$storage""' -f --burn-cap 6.405"
-
-sandbox-FA2-mint:   
-	@$(DOCKER_RUN_SANDBOX) "tezos-client transfer 0.000000 from tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb to KT1EyY5Wj6P9Mvp4tnqWEMm773Ho2tvwf2gS --entrypoint 'mint' --arg 'Pair (Pair \"tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb\" 1) (Pair \"TOK\" 1)' --burn-cap 0.166"
+	storage=$$(cat contracts/nft_mutran_storage.tz) ; \
+	$(DOCKER_CMD_SANDBOX) tezos-client originate contract FA2 transferring 0 from alice running /contracts/nft_mutran_contract.tz --init "$$storage" -f --burn-cap 6.405
 
 
 #######################################

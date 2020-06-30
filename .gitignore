@@ -25,6 +25,10 @@ yarn-error.log*
 # misc
 .DS_Store
 
+# shell
+.bash_history
+.python_history
+
 # pytezos
 __pycache__
 .pytest_cache
