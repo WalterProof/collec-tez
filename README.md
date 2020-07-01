@@ -45,7 +45,7 @@ Some commands, like deploy requires the config to be changed from the default on
 ### Contract
 
 NFT contract is taken from https://gitlab.com/smondet/fa2-smartpy/-/tree/master/michelson
-it can be deployed with `make contracts-originate-FA2`
+it can be deployed with `make contracts-FA2-originate`
 
 Once deployed, fill the obtained contract address in the .env file.
 
@@ -63,5 +63,13 @@ Then run `make dapp-start`
 
 ## Useful links
 
-https://smondet.gitlab.io/fa2-smartpy/
+### Pytezos
+
+https://pytezos.baking-bad.org  
+https://medium.com/tezoscommons/testing-michelson-contracts-with-pytezos-513718499e93  
+https://blog.aira.life/tezos-dont-forget-the-mother-console-fd2001261e50
+
+### TZIP-12
+
 https://forum.tezosagora.org/t/implementing-fa2-an-update-on-the-fa2-specification-and-smartpy-implementation-release/1870
+https://smondet.gitlab.io/fa2-smartpy/

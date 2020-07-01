@@ -1,7 +1,4 @@
 import os
-import sys
-import time
-import threading
 from pytezos import pytezos
 from pytezos.crypto import Key
 from pytezos import Contract

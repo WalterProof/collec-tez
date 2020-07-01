@@ -7,10 +7,9 @@ ALICE_SK = os.environ.get('SANDBOX_ALICE_SK')
 
 alice = Key.from_encoded_key(ALICE_SK)
 
-pytezos.using(key=alice, shell='http://sandbox:20000')
-
-ci = pytezos.contract(FA2_ADDRESS)
+sandbox = pytezos.using(key=alice, shell='http://sandbox:20000')
+ci = sandbox.contract(FA2_ADDRESS)
 
 op = ci.mint({'address': alice.public_key_hash(),
-              'amount': 1, 'symbol': 'TOK', 'token_id': 0}).using(key=alice).inject()
+              'amount': 1, 'symbol': 'TOK', 'token_id': 0}).inject()
 print(op)

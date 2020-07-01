@@ -10,6 +10,8 @@ GID := $(shell id -g)
 
 default: help
 
+BCD_SANDBOX_URL = https://old.better-call.dev/sandbox/
+
 DOCKER_SERVICE_TOOLS = tools
 DOCKER_SERVICE_SANDBOX = sandbox
 
@@ -76,9 +78,16 @@ contracts-interactive: ## open python console
 contracts-run-script: ## run script from tools container (make contracts-run-script SCRIPT=script)
 	@$(DOCKER_CMD_TOOLS) python contracts/scripts/$(SCRIPT).py
 
-contracts-originate-FA2: ## originate the FA2 contract
+contracts-FA2-originate: ## originate the FA2 contract
 	@address=$(shell ./scripts/originate-FA2.sh) ; \
-	echo "https://old.better-call.dev/sandbox/$$address"
+	echo "$(BCD_SANDBOX_URL)/$$address"
+
+contracts-FA2-parameter: ## show FA2 parameter schema
+	@$(DOCKER_CMD_TOOLS) pytezos parameter schema --path=contracts/nft_mutran_contract.tz
+
+contracts-FA2-storage: ## show FA2 parameter schema
+	@$(DOCKER_CMD_TOOLS) pytezos storage schema --path=contracts/nft_mutran_contract.tz
+
 
 #######################################
 #              DAPP                   #
