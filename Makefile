@@ -81,14 +81,14 @@ contracts-interactive: ## open python console
 contracts-run-script: ## run script from tools container (make contracts-run-script S=script [NETWORK=network])
 	$(DOCKER_CMD_TOOLS) python contracts/scripts/$(S).py $(NETWORK)
 
-contracts-FA2-originate: ## originate the FA2 contract
+contracts-originate-tzip: ## originate the FA2 contract (contracts-originate-tzip [NETWORK=network])
 	@address=$(shell ./scripts/originate-FA2.sh $(NETWORK)) ; \
 		if [[ $(NETWORK) == 'sandbox' ]]; \
 			then echo "$(BCD_SANDBOX_URL)/$$address"; \
 			else echo "$(BCD_TESTNET_URL)/$$address"; \
 		fi
 
-contracts-parameter: ## show FA2 parameter schema (make contracts-parameterC=contract)
+contracts-parameter: ## show FA2 parameter schema (make contracts-parameter C=contract)
 	@$(DOCKER_CMD_TOOLS) pytezos parameter schema --path=contracts/$(C).tz
 
 contracts-storage: ## show FA2 parameter schema (make contracts-storage C=contract)
@@ -158,13 +158,6 @@ sandbox-deploy-FA2: ## deploy FA2 contract
 sandbox-run-client: ## run client command on sandbox (make sandbox-run-client CMD=cmd)
 	$(DOCKER_CMD_SANDBOX) tezos-client $(CMD)
 
-
-#######################################
-#              TOOLS                  #
-#######################################
-tools-update-rpc: ## update used rpc inside tools container (make tools-update-rpc RPC=rpc)
-	sed -i -e "s/^TOOLS_RPC=.*$$/TOOLS_RPC=$(RPC)/g" .env
-	docker-compose up --force-recreate --no-deps -d tools
 
 #######################################
 #               MISC                  #

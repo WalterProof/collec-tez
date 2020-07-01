@@ -1,19 +1,11 @@
 import os
 import sys
 from pytezos import pytezos
-from pytezos.crypto import Key
 from pytezos import Contract
+from config import config
 
-
-rpc_cnf = {
-    'sandbox': 'http://sandbox:20000',
-    'testnet': 'https://testnet-tezos.giganode.io'
-}
-
-rpc = rpc_cnf[sys.argv[1]]
-
-alice = Key.from_encoded_key(os.environ.get('SANDBOX_ALICE_SK'))
-sandbox = pytezos.using(key=alice, shell=rpc)
+conf = config()
+pt = pytezos.using(key=conf['alice'], shell=conf['rpc'])
 
 contract = Contract.from_file('~/contracts/nft-tablespoon.tz')
 
@@ -40,18 +32,17 @@ initial_storage = {
         }
     },
     'tokensLedger': {
-        0: alice.public_key_hash()
+        0: conf['alice'].public_key_hash()
     },
     'u': None
 }
 
 script = contract.script(storage=initial_storage)
-
-op = sandbox.origination(script=script).autofill().sign().inject()
+op = pt.origination(script=script).autofill().sign().inject()
 
 while True:
     try:
-        opg = sandbox.shell.blocks[-5:].find_operation(op['hash'])
+        opg = pt.shell.blocks[-5:].find_operation(op['hash'])
         break
     except StopIteration:
         print('waiting for the operation to be baked...')

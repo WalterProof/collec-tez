@@ -44,10 +44,9 @@ Some commands, like deploy requires the config to be changed from the default on
 
 ### Contract
 
-NFT contract is taken from https://gitlab.com/smondet/fa2-smartpy/-/tree/master/michelson
-it can be deployed with `make contracts-FA2-originate`
-
-Once deployed, fill the obtained contract address in the .env file.
+TZIP-12 implementation contracts are deployable with `make contracts-originate-tzip`  
+Default network is sandbox, you can deploy to tesnet by adding `NETWORK=testnet`  
+The `.env` file `FA2_ADDRESS` is automatically updated with the new address.
 
 ### Dapp Dev
 
