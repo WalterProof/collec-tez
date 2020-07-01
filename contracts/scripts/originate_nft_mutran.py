@@ -1,12 +1,20 @@
 import os
+import sys
 from pytezos import pytezos
 from pytezos.crypto import Key
 from pytezos import Contract
 
-alice = Key.from_encoded_key(os.environ.get('SANDBOX_ALICE_SK'))
-sandbox = pytezos.using(key=alice, shell='http://sandbox:20000')
+rpc_cnf = {
+    'sandbox': 'http://sandbox:20000',
+    'testnet': 'https://testnet-tezos.giganode.io'
+}
 
-contract = Contract.from_file('~/contracts/nft_mutran_contract.tz')
+rpc = rpc_cnf[sys.argv[1]]
+
+alice = Key.from_encoded_key(os.environ.get('SANDBOX_ALICE_SK'))
+sandbox = pytezos.using(key=alice, shell=rpc)
+
+contract = Contract.from_file('~/contracts/nft_mutran.tz')
 
 initial_storage = {
     'administrator': alice.public_key_hash(),

@@ -27,7 +27,7 @@ class NFTMutranTest(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.nft_mutran = ContractInterface.create_from(
-            join(dirname(__file__), '../nft_mutran_contract.tz'))
+            join(dirname(__file__), '../nft_mutran.tz'))
 
     def test_mint(self):
         res = self.nft_mutran \
@@ -36,3 +36,37 @@ class NFTMutranTest(TestCase):
 
         self.assertEqual(
             1, res.big_map_diff['ledger'][alice.public_key_hash(), 0])
+
+    # def test_transfer(self):
+    #     res = self.nft_mutran \
+    #         .transfer([
+    #             {'from_': alice.public_key_hash(), 'txs': [
+    #                 {
+    #                     'to': bob.public_key_hash(),
+    #                     'token_id': 0,
+    #                     'amount': 1
+    #                 }
+    #             ]}
+    #         ]).result(storage={
+    #             **initial_storage,
+    #             'all_tokens': 1,
+    #             'ledger': {
+    #                 (alice.public_key_hash(), 0): 1
+    #             },
+    #             'tokens': {
+    #                 0: {
+    #                     'token_id': 0,
+    #                     'symbol': 'TOK',
+    #                     'name': '',
+    #                     'decimals': 0,
+    #                     'extras': {},
+    #                     'total_supply': 1
+    #                 }
+    #             }
+    #         },
+    #             source=alice.public_key_hash()
+    #         )
+
+        # self.assertEqual(
+        #     1, res.big_map_diff['ledger'][bob.public_key_hash(), 0])
+

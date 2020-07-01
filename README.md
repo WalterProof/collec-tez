@@ -71,5 +71,7 @@ https://blog.aira.life/tezos-dont-forget-the-mother-console-fd2001261e50
 
 ### TZIP-12
 
-https://forum.tezosagora.org/t/implementing-fa2-an-update-on-the-fa2-specification-and-smartpy-implementation-release/1870
+https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md  
+https://forum.tezosagora.org/t/implementing-fa2-an-update-on-the-fa2-specification-and-smartpy-implementation-release/1870  
+https://medium.com/@matej.sima/tutorial-implementing-a-mini-token-contract-on-tezos-with-on-chain-callbacks-tzip-12-b04cf7ee2059
 https://smondet.gitlab.io/fa2-smartpy/

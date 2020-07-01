@@ -24,6 +24,7 @@ services:
         UID: ${UID}
         GID: ${GID}
     environment:
+      RPC: ${TOOLS_RPC} 
       FA2_ADDRESS: ${FA2_ADDRESS}
       SANDBOX_ALICE_SK: ${SANDBOX_ALICE_SK}
       SANDBOX_BOB_SK: ${SANDBOX_BOB_SK}
