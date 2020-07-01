@@ -45,7 +45,7 @@ Some commands, like deploy requires the config to be changed from the default on
 ### Contract
 
 NFT contract is taken from https://gitlab.com/smondet/fa2-smartpy/-/tree/master/michelson
-it can be deployed with `make sandbox-deploy-FA2`
+it can be deployed with `make contracts-originate-FA2`
 
 Once deployed, fill the obtained contract address in the .env file.
 

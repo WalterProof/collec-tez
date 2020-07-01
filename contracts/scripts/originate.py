@@ -7,7 +7,7 @@ from pytezos.crypto import Key
 from pytezos import Contract
 
 alice = Key.from_encoded_key(os.environ.get('SANDBOX_ALICE_SK'))
-pytezos.using(key=alice, shell='http://sandbox:20000')
+sandbox = pytezos.using(key=alice, shell='http://sandbox:20000')
 
 contract = Contract.from_file('~/contracts/nft_mutran_contract.tz')
 
@@ -23,11 +23,11 @@ initial_storage = {
 
 script = contract.script(storage=initial_storage)
 
-op = pytezos.origination(script=script).autofill().sign().inject()
+op = sandbox.origination(script=script).autofill().sign().inject()
 
 while True:
     try:
-        opg = pytezos.shell.blocks[-5:].find_operation(op['hash'])
+        opg = sandbox.shell.blocks[-5:].find_operation(op['hash'])
         break
     except StopIteration:
         print('waiting for the operation to be baked...')

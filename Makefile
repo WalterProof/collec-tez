@@ -74,10 +74,11 @@ contracts-interactive: ## open python console
 	@$(DOCKER_CMD_TOOLS) python
 
 contracts-run-script: ## run script from tools container (make contracts-run-script SCRIPT=script)
-	$(DOCKER_CMD_TOOLS) python contracts/scripts/$(SCRIPT).py
+	@$(DOCKER_CMD_TOOLS) python contracts/scripts/$(SCRIPT).py
 
 contracts-originate-FA2: ## originate the FA2 contract
-	$(shell ./scripts/originate-FA2.sh)
+	@address=$(shell ./scripts/originate-FA2.sh) ; \
+	echo "https://old.better-call.dev/sandbox/$$address"
 
 #######################################
 #              DAPP                   #
@@ -121,7 +122,6 @@ infra-stop: ## to stop all the containers
 infra-up: ## to create and start all the containers
 	@if [ ! -f .env -a -f .env.dist ]; then sed "s,#UID#,$(UID),g;s,#GID#,$(GID),g" .env.dist > .env; fi
 	@docker-compose up --build -d
-	@docker-compose exec bcd bash -c 'sed -i "s/127.0.0.1:8732/sandbox:20000/g" /usr/share/nginx/html/js/app.76b1b662.js'
 
 
 #######################################

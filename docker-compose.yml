@@ -1,15 +1,6 @@
 version: "3"
 
 services:
-  bcd:
-    image: bakingbad/better-call-dev
-    ports:
-      - "9000:80"
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   sandbox:
     image: registry.gitlab.com/tezos/flextesa:image-tutobox-run
     environment:
