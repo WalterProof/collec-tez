@@ -39,8 +39,9 @@ exports.tokens = functions.https.onRequest(async (request, response) => {
   }
 
   let tokens = await contract.getTokens();
-  let meta = tokens.map((token) => ipfs.getFile(token.hash));
+  let meta = tokens.map((token) => ipfs.getFile(token.cId));
   meta = await Promise.all(meta);
+
   tokens = tokens.map((token, i) => ({ ...token, meta: meta[i] }));
 
   return response.status(200).send(JSON.stringify(tokens));

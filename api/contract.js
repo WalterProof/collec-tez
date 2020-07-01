@@ -26,24 +26,29 @@ const contract = ((address) => {
 
     async getTokens() {
       const c = await contract.getIndexedContract();
-      const [idTokenMeta, idTokenOwners] = c.bigmap_ids;
-      let owners = await contract.getIndexedBigMapValues(idTokenOwners);
-      let meta = await contract.getIndexedBigMapValues(idTokenMeta);
+      const [
+        bmIdTokenOperators,
+        bmIdTokenMeta,
+        bmIdTokensLedger,
+      ] = c.bigmap_ids;
+      let meta = await contract.getIndexedBigMapValues(bmIdTokenMeta);
+      let owners = await contract.getIndexedBigMapValues(bmIdTokensLedger);
       owners = owners.map((item) => ({
         id: item.key,
         owner: item.value,
       }));
+
       meta = meta.map((item) => ({
-        id: item.key,
-        hash: item.value,
+        name: item.value.extras.name,
+        cId: item.value.extras.c_id,
       }));
 
       return meta.map((item, i) => ({
         ...owners[i],
-        hash: item.hash,
+        ...item,
       }));
     },
   };
-})(config.CONTRACT_ADDRESS);
+})(config.FA2_ADDRESS);
 
 module.exports = contract;

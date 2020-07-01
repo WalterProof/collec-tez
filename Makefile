@@ -54,8 +54,8 @@ install: # install all dependencies
 api-config: ## override firebase config
 	@firebase functions:config:get > .runtimeconfig.json
 	@$(call read_env) && \
-	$(call set_json_key,.runtimeconfig.json,.contract.address,$$REACT_APP_CONTRACT_ADDRESS) && \
-	$(call set_json_key,.runtimeconfig.json,.node.url,$$REACT_APP_RPC) && \
+	$(call set_json_key,.runtimeconfig.json,.fa2.address,$$FA2_ADDRESS) && \
+	$(call set_json_key,.runtimeconfig.json,.node.url,$$NODE_URL) && \
 	$(call set_json_key,.runtimeconfig.json,.tzstats.api,$$TZSTATS_API) && \
 	$(call set_json_key,.runtimeconfig.json,.ipfs.gateway,$$IPFS_GATEWAY) 
 
@@ -110,6 +110,7 @@ dapp-install: ## install dapp
 dapp-start: ## start dapp
 	@$(call read_env) && \
 		export REACT_APP_ALICE_SK=$$SANDBOX_ALICE_SK &&\
+		export REACT_APP_FA2_ADDRESS=$$FA2_ADDRESS && \
 		$(YARN) $(DAPP_DIR) start
 
 dapp-test: ## test dapp
